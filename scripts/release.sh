@@ -11,6 +11,11 @@
 
 set -euo pipefail
 
+# Non-login shells (CI, background tasks) may lack cargo on PATH.
+if [[ -d "$HOME/.cargo/bin" && ":$PATH:" != *":$HOME/.cargo/bin:"* ]]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 VERSION="${1:-}"
 if [[ -z "$VERSION" ]]; then
     echo "usage: $0 <version>" >&2
@@ -23,10 +28,13 @@ if [[ ! -f "$KEY" ]]; then
     exit 1
 fi
 
+# The build's updater signing reads the key from the content variable;
+# the file path alone is not enough in a non-interactive shell.
+export TAURI_SIGNING_PRIVATE_KEY="$(cat "$KEY")"
 export TAURI_SIGNING_PRIVATE_KEY_PATH="$KEY"
+export TAURI_SIGNING_PRIVATE_KEY_PASSWORD=""
 
 echo "==> Bumping version to $VERSION"
-# The three places the version lives.
 node -e "
 const fs = require('fs');
 for (const file of ['package.json', 'src-tauri/tauri.conf.json', 'src-tauri/Cargo.toml']) {
@@ -37,31 +45,50 @@ for (const file of ['package.json', 'src-tauri/tauri.conf.json', 'src-tauri/Carg
 "
 
 echo "==> Building (universal)"
-pnpm tauri build --bundles app,dmg
+pnpm tauri build --bundles app,dmg --target universal-apple-darwin
 
-BUNDLE="src-tauri/target/release/bundle"
-APP_ARCH="aarch64-apple-darwin"
-TARGET="$APP_ARCH"
+BUNDLE="src-tauri/target/universal-apple-darwin/release/bundle"
+APP_ARCHIVE="$BUNDLE/macos/MkCleaner.app.tar.gz"
+SIG="$APP_ARCHIVE.sig"
 
-# The signed update artifacts the build produced.
-SIG="$BUNDLE/macos/$TARGET/MkCleaner.app.tar.gz.sig"
-MANIFEST="$(ls "$BUNDLE"/macos/$TARGET/latest-*.json 2>/dev/null | head -1 || true)"
-
-if [[ -z "$MANIFEST" || ! -f "$SIG" ]]; then
-    echo "!! updater artifacts not found — check tauri.conf.json plugins.updater" >&2
+if [[ ! -f "$SIG" ]]; then
+    echo "!! updater signature not found — check tauri.conf.json plugins.updater and the signing key" >&2
     exit 1
 fi
 
+# tauri-cli signs the archive but does not write the manifest; produce one per
+# platform. Both point at the same universal archive, so the signature is the
+# same and only the file names differ.
+RELEASE_URL="https://github.com/HanversionOvO/MKCleaner/releases/download/v$VERSION/MkCleaner.app.tar.gz"
+SIGNATURE="$(cat "$SIG")"
+PUB_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+for TARGET in aarch64-apple-darwin x86_64-apple-darwin; do
+    MANIFEST="$BUNDLE/macos/latest-$TARGET.json"
+    cat > "$MANIFEST" <<EOF
+{
+  "version": "$VERSION",
+  "notes": "",
+  "pub_date": "$PUB_DATE",
+  "platforms": {
+    "$TARGET": {
+      "signature": "$SIGNATURE",
+      "url": "$RELEASE_URL"
+    }
+  }
+}
+EOF
+done
+
 echo "==> Release artifacts"
-ls -lh "$BUNDLE/dmg/"*.dmg "$BUNDLE/macos/$TARGET/MkCleaner.app.tar.gz" "$SIG" "$MANIFEST"
+ls -lh "$BUNDLE/dmg/"*.dmg "$APP_ARCHIVE" "$SIG" "$BUNDLE/macos/latest-"*.json
 
 if [[ -n "${GH_TOKEN:-}" ]]; then
     echo "==> Publishing GitHub release v$VERSION"
     gh release create "v$VERSION" \
         "$BUNDLE/dmg/"*.dmg \
-        "$BUNDLE/macos/$TARGET/MkCleaner.app.tar.gz" \
+        "$APP_ARCHIVE" \
         "$SIG" \
-        "$MANIFEST" \
+        "$BUNDLE/macos/latest-"*.json \
         --latest --title "MkCleaner $VERSION" --notes "See the changelog in the repository."
     echo "done — the app's next launch will offer the update."
 else
@@ -69,6 +96,8 @@ else
     echo "Built and signed. Publish with:"
     echo "  gh release create v$VERSION \\"
     echo "      $BUNDLE/dmg/*.dmg \\"
-    echo "      $BUNDLE/macos/$TARGET/MkCleaner.app.tar.gz \\"
-    echo "      $SIG $MANIFEST --latest"
+    echo "      $APP_ARCHIVE \\"
+    echo "      $SIG \\"
+    echo "      $BUNDLE/macos/latest-aarch64-apple-darwin.json \\"
+    echo "      $BUNDLE/macos/latest-x86_64-apple-darwin.json --latest"
 fi

@@ -27,7 +27,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIzREU3NjM0QTQzNjAzRjUKUldUMUF6YWtOSGJlczFUNitYZW9mK2ppdzYwaTlid0dWSWdVK2I1SExvUG84SHVDSy9NMXVqT1kK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc0QjEwMjQ0MDZDOTEyQzgKUldUSUVza0dSQUt4ZEFkd2w3Q0ZNMFNwT2xwL05jSVFaeVRUbTIxU3MrREkydkZZMHg4MTZ3blUK",
       "endpoints": [
         "https://github.com/HanversionOvO/MKCleaner/releases/latest/download/latest-{{target}}.json"
       ]
@@ -36,6 +36,7 @@
   "bundle": {
     "active": true,
     "targets": ["app", "dmg"],
+    "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
