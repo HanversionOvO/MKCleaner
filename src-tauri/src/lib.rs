@@ -28,8 +28,10 @@ fn license_path(app: AppHandle) -> Option<String> {
 /// never be requested programmatically — macOS forbids that — so the app
 /// detects the gap and guides the user to grant it in one step instead.
 ///
-/// Detection: protected directories refuse even listing when FDA is absent,
-/// so reading a few candidates that exist on every Mac with data is enough.
+/// Detection: TCC-protected data directories refuse even listing without
+/// FDA, so probing a couple of candidates that exist on any Mac with data is
+/// enough. The TCC database itself is NOT a probe — a plain `stat` on it is
+/// not refused.
 #[tauri::command]
 fn fda_status() -> bool {
     let Some(home) = std::env::var_os("HOME") else {

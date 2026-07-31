@@ -51,7 +51,8 @@
     "licenseFile": "../LICENSE",
     "macOS": {
       "minimumSystemVersion": "13.0",
-      "entitlements": "entitlements.plist"
+      "entitlements": "entitlements.plist",
+      "signingIdentity": "MkCleaner Code Signing"
     }
   }
 }
