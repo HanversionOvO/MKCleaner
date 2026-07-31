@@ -52,6 +52,9 @@ export const fdaStatus = () => invoke<boolean>("fda_status");
 
 export const openFdaSettings = () => invoke<void>("open_fda_settings");
 
+export const setOnboardingWindow = (onboarding: boolean) =>
+  invoke<void>("set_onboarding_window", { onboarding });
+
 // --- disk -----------------------------------------------------------------
 
 export const DiskSummary = z.object({

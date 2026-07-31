@@ -48,6 +48,23 @@ fn fda_status() -> bool {
     true
 }
 
+/// Switches the window between the fixed-size permission onboarding and the
+/// resizable main UI.
+#[tauri::command]
+fn set_onboarding_window(app: AppHandle, onboarding: bool) {
+    if let Some(window) = app.get_webview_window("main") {
+        if onboarding {
+            let _ = window.set_resizable(false);
+            let _ = window.set_size(tauri::LogicalSize::new(700.0, 600.0));
+            let _ = window.center();
+        } else {
+            let _ = window.set_resizable(true);
+            let _ = window.set_size(tauri::LogicalSize::new(1040.0, 720.0));
+            let _ = window.center();
+        }
+    }
+}
+
 /// Opens the Full Disk Access panel in System Settings.
 ///
 /// The deep link must use the modern System Settings bundle id — macOS 12's
@@ -92,6 +109,7 @@ fn show_main_window(app: &AppHandle) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(mole::status::Watcher::default())
         .manage(mole::terminal::Terminal::default())
@@ -120,6 +138,7 @@ pub fn run() {
             restart_app,
             fda_status,
             open_fda_settings,
+            set_onboarding_window,
         ])
         // Closing the window hides it instead of quitting — the app lives in
         // the tray. Cmd+Q still quits, as does the tray's 退出 item.

@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { formatBytes, formatCount } from "@/lib/format";
 import {
   cleanHistory,
   cleanRun,
@@ -178,6 +179,14 @@ function asCleaning(phase: Phase): Extract<Phase, { name: "cleaning" }> | null {
 export async function startClean() {
   if (state.phase.name === "cleaning") return;
   set({ error: null, phase: { name: "cleaning", freed: 0, done: 0, removed: [] } });
+
+  // If the user steps away mid-run, tell them when it finishes.
+  let blurred = false;
+  const onBlur = () => {
+    blurred = true;
+  };
+  window.addEventListener("blur", onBlur);
+
   try {
     const summary = await cleanRun();
     // Hold the working view for one exit beat so the run does not just
@@ -199,8 +208,22 @@ export async function startClean() {
     void cleanHistory()
       .then((history) => set({ history }))
       .catch(() => {});
+
+    if (blurred) {
+      try {
+        const { sendNotification } = await import("@tauri-apps/plugin-notification");
+        sendNotification({
+          title: "清理完成",
+          body: `已释放 ${formatBytes(summary.freedBytes)}，清理 ${formatCount(summary.items)} 项`,
+        });
+      } catch {
+        // Notifications are a nicety; a failed send must not surface.
+      }
+    }
   } catch (e) {
     set({ error: message(e), phase: { name: "ready" } });
+  } finally {
+    window.removeEventListener("blur", onBlur);
   }
 }
 

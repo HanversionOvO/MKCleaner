@@ -24,16 +24,28 @@ from PIL import Image, ImageDraw
 
 SQUIRCLE_RADIUS = 0.2237  # share of the size, Apple's squircle corner radius
 
-BG_TOP = (224, 135, 104)    # clay light
-BG_BOTTOM = (196, 92, 66)   # clay dark
+# Apple-style background: a rich vertical clay gradient, light at the top and
+# deepening towards the bottom, with a slight warmth boost in the middle.
+BG_STOPS = [
+    (0.00, (235, 160, 122)),
+    (0.35, (226, 131, 95)),
+    (0.70, (210, 104, 70)),
+    (1.00, (184, 82, 50)),
+]
 
 
 def background(size: int) -> Image.Image:
-    """Diagonal clay gradient, dark in the bottom-right corner."""
+    """Vertical clay gradient, light top to deep bottom (Apple style)."""
     img = Image.new("RGB", (size, size))
     for y in range(size):
         t = y / (size - 1)
-        row = tuple(int(BG_TOP[i] + (BG_BOTTOM[i] - BG_TOP[i]) * t) for i in range(3))
+        for (t0, c0), (t1, c1) in zip(BG_STOPS, BG_STOPS[1:]):
+            if t0 <= t <= t1:
+                k = (t - t0) / (t1 - t0)
+                row = tuple(int(c0[i] + (c1[i] - c0[i]) * k) for i in range(3))
+                break
+        else:
+            row = BG_STOPS[-1][1]
         img.paste(row, (0, y, size, y + 1))
     return img
 

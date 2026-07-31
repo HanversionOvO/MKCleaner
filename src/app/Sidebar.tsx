@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { EngineInfo } from "@/lib/ipc";
 import { useUpdate } from "@/lib/updateStore";
+import { useClean } from "@/features/clean/store";
 import { AboutDialog } from "@/components/AboutDialog";
 import {
   AnalyzeIcon,
@@ -31,6 +32,8 @@ type Props = {
 export function Sidebar({ current, onNavigate, engine }: Props) {
   const [aboutOpen, setAboutOpen] = useState(false);
   const update = useUpdate();
+  const { phase: cleanPhase } = useClean();
+  const cleanBusy = cleanPhase.name === "scanning" || cleanPhase.name === "cleaning";
 
   return (
     <nav
@@ -61,6 +64,14 @@ export function Sidebar({ current, onNavigate, engine }: Props) {
             >
               <Icon className={active ? "text-clay" : "text-ink-faint"} />
               <span className="font-medium">{label}</span>
+              {/* While a scan or cleanup is running, the clean item carries a
+                  small pulsing marker so the work is visible from any tab. */}
+              {id === "clean" && cleanBusy && (
+                <span
+                  className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-clay"
+                  aria-label="清理进行中"
+                />
+              )}
             </button>
           );
         })}
