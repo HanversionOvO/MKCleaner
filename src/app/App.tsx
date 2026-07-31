@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { engineInfo, onTrayNavigate, onTrayScan, type EngineInfo } from "@/lib/ipc";
 import { checkForUpdates } from "@/lib/updateStore";
+import { FdaBanner } from "@/components/FdaBanner";
 import { startScan } from "@/features/clean/store";
 import { Sidebar, type ViewId } from "./Sidebar";
 import { CleanView } from "@/features/clean/CleanView";
@@ -70,13 +71,18 @@ export default function App() {
       />
       {/* Keying the view replays a quiet fade on every tab change — enough to
           connect the transition, not enough to feel busy. */}
-      <main key={view} className="fade-in flex min-w-0 flex-1">
-        {view === "clean" && <CleanView />}
-        {view === "optimize" && <OptimizeView />}
-        {view === "analyze" && <AnalyzeView />}
-        {view === "status" && <StatusView />}
-        {view === "uninstall" && <UninstallView />}
-        {view === "terminal" && <TerminalView />}
+      <main key={view} className="fade-in flex min-w-0 flex-1 flex-col">
+        <div className="px-9 pt-5">
+          <FdaBanner />
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col">
+          {view === "clean" && <CleanView />}
+          {view === "optimize" && <OptimizeView />}
+          {view === "analyze" && <AnalyzeView />}
+          {view === "status" && <StatusView />}
+          {view === "uninstall" && <UninstallView />}
+          {view === "terminal" && <TerminalView />}
+        </div>
       </main>
     </div>
   );

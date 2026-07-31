@@ -20,6 +20,34 @@ fn license_path(app: AppHandle) -> Option<String> {
         .map(String::from)
 }
 
+/// Whether the app holds Full Disk Access.
+///
+/// Without it macOS shows a TCC permission dialog for every protected
+/// directory (Mail, Safari, each app's caches…), which is why a cleanup tool
+/// without FDA feels like it "keeps asking for permissions". FDA itself can
+/// never be requested programmatically — macOS forbids that — so the app
+/// detects the gap and guides the user to grant it in one step instead.
+///
+/// Detection: protected directories refuse even listing when FDA is absent,
+/// so reading a few candidates that exist on every Mac with data is enough.
+#[tauri::command]
+fn fda_status() -> bool {
+    let Some(home) = std::env::var_os("HOME") else {
+        return false;
+    };
+    let home = std::path::PathBuf::from(home);
+
+    let protected = ["Library/Mail", "Library/Safari", "Library/Calendars"];
+    for candidate in protected {
+        match std::fs::read_dir(home.join(candidate)) {
+            // PermissionDenied on a protected path means no Full Disk Access.
+            Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => return false,
+            _ => {}
+        }
+    }
+    true
+}
+
 /// Restarts the app after an update has replaced the bundle.
 ///
 /// In a dev build there is no bundle to relaunch, so the current executable
@@ -79,6 +107,7 @@ pub fn run() {
             mole::terminal::terminal_pty_kill,
             license_path,
             restart_app,
+            fda_status,
         ])
         // Closing the window hides it instead of quitting — the app lives in
         // the tray. Cmd+Q still quits, as does the tray's 退出 item.

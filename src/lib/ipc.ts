@@ -48,6 +48,8 @@ export const licensePath = () => invoke<string | null>("license_path");
 
 export const restartApp = () => invoke<void>("restart_app");
 
+export const fdaStatus = () => invoke<boolean>("fda_status");
+
 // --- disk -----------------------------------------------------------------
 
 export const DiskSummary = z.object({
