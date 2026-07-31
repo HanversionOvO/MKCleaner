@@ -20,6 +20,26 @@ fn license_path(app: AppHandle) -> Option<String> {
         .map(String::from)
 }
 
+/// Restarts the app after an update has replaced the bundle.
+///
+/// In a dev build there is no bundle to relaunch, so the current executable
+/// is spawned again; in a release build the updater has already swapped the
+/// .app contents, and `open` launches the fresh one.
+#[tauri::command]
+fn restart_app(app: AppHandle) {
+    #[cfg(debug_assertions)]
+    {
+        if let Ok(exe) = std::env::current_exe() {
+            let _ = std::process::Command::new(exe).spawn();
+        }
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        let _ = std::process::Command::new("open").arg("-a").arg("MkCleaner").spawn();
+    }
+    app.exit(0);
+}
+
 /// Brings the main window back from the tray.
 fn show_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
@@ -58,6 +78,7 @@ pub fn run() {
             mole::terminal::terminal_pty_resize,
             mole::terminal::terminal_pty_kill,
             license_path,
+            restart_app,
         ])
         // Closing the window hides it instead of quitting — the app lives in
         // the tray. Cmd+Q still quits, as does the tray's 退出 item.

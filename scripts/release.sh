@@ -57,30 +57,41 @@ if [[ ! -f "$SIG" ]]; then
 fi
 
 # tauri-cli signs the archive but does not write the manifest; produce one per
-# platform. Both point at the same universal archive, so the signature is the
-# same and only the file names differ.
+# naming scheme. The updater plugin looks up `latest-{{target}}.json` where
+# {{target}} is the runtime's own os(-arch) form (`darwin`, `darwin-aarch64`),
+# while CI tooling conventionally names manifests after the Rust triple
+# (`aarch64-apple-darwin`). All point at the same universal archive, so the
+# signature is the same and only the file names differ.
 RELEASE_URL="https://github.com/HanversionOvO/MKCleaner/releases/download/v$VERSION/MkCleaner.app.tar.gz"
 SIGNATURE="$(cat "$SIG")"
 PUB_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-for TARGET in aarch64-apple-darwin x86_64-apple-darwin; do
+
+# Every manifest lists every possible platform key: the updater plugin matches
+# on `{os}-{arch}` and `{os}-{arch}-{installer}` fallbacks, CI tooling uses the
+# Rust triple, and all point at the same universal archive.
+PLATFORMS='darwin-aarch64-app darwin-aarch64 darwin-x86_64-app darwin-x86_64 darwin aarch64-apple-darwin x86_64-apple-darwin'
+
+MANIFESTS=()
+for TARGET in $PLATFORMS; do
     MANIFEST="$BUNDLE/macos/latest-$TARGET.json"
-    cat > "$MANIFEST" <<EOF
-{
-  "version": "$VERSION",
-  "notes": "",
-  "pub_date": "$PUB_DATE",
-  "platforms": {
-    "$TARGET": {
-      "signature": "$SIGNATURE",
-      "url": "$RELEASE_URL"
-    }
-  }
+    node -e "
+const fs = require('fs');
+const platforms = {};
+for (const t of '$PLATFORMS'.split(' ')) {
+    platforms[t] = { signature: '$SIGNATURE', url: '$RELEASE_URL' };
 }
-EOF
+fs.writeFileSync('$MANIFEST', JSON.stringify({
+    version: '$VERSION',
+    notes: '',
+    pub_date: '$PUB_DATE',
+    platforms,
+}, null, 2) + '\n');
+"
+    MANIFESTS+=("$MANIFEST")
 done
 
 echo "==> Release artifacts"
-ls -lh "$BUNDLE/dmg/"*.dmg "$APP_ARCHIVE" "$SIG" "$BUNDLE/macos/latest-"*.json
+ls -lh "$BUNDLE/dmg/"*.dmg "$APP_ARCHIVE" "$SIG" "${MANIFESTS[@]}"
 
 if [[ -n "${GH_TOKEN:-}" ]]; then
     echo "==> Publishing GitHub release v$VERSION"
@@ -88,7 +99,7 @@ if [[ -n "${GH_TOKEN:-}" ]]; then
         "$BUNDLE/dmg/"*.dmg \
         "$APP_ARCHIVE" \
         "$SIG" \
-        "$BUNDLE/macos/latest-"*.json \
+        "${MANIFESTS[@]}" \
         --latest --title "MkCleaner $VERSION" --notes "See the changelog in the repository."
     echo "done — the app's next launch will offer the update."
 else
@@ -98,6 +109,5 @@ else
     echo "      $BUNDLE/dmg/*.dmg \\"
     echo "      $APP_ARCHIVE \\"
     echo "      $SIG \\"
-    echo "      $BUNDLE/macos/latest-aarch64-apple-darwin.json \\"
-    echo "      $BUNDLE/macos/latest-x86_64-apple-darwin.json --latest"
+    echo "      ${MANIFESTS[*]} --latest"
 fi

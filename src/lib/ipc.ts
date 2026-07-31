@@ -46,6 +46,8 @@ export const engineInfo = () => call("engine_info", EngineInfo);
 
 export const licensePath = () => invoke<string | null>("license_path");
 
+export const restartApp = () => invoke<void>("restart_app");
+
 // --- disk -----------------------------------------------------------------
 
 export const DiskSummary = z.object({

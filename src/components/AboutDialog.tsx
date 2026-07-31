@@ -10,6 +10,7 @@ const REPO_URL = "https://github.com/HanversionOvO/MKCleaner";
 
 /** The update button's label for each state. */
 const UPDATE_LABELS: Record<string, string> = {
+  idle: "检查更新",
   checking: "检查中…",
   none: "已是最新版本",
   available: "",
@@ -116,6 +117,12 @@ export function AboutDialog({
           </Row>
           <Row label="清理引擎">Mole {engine?.version ?? ""}</Row>
         </dl>
+
+        {update.status === "error" && (
+          <p className="selectable mt-4 rounded-control bg-sunken px-3 py-2 font-mono text-[11.5px] text-rust">
+            {update.message}
+          </p>
+        )}
 
         {/* The two quiet actions sit together on the right, macOS dialog
             style. Update state lives inside its button, nothing floats loose. */}

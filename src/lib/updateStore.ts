@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from "react";
 import { check } from "@tauri-apps/plugin-updater";
+import { restartApp } from "@/lib/ipc";
 
 export type UpdateState =
+  | { status: "idle" }
   | { status: "checking" }
   | { status: "none" }
   | { status: "available"; version: string }
@@ -9,7 +11,7 @@ export type UpdateState =
   | { status: "installed" }
   | { status: "error"; message: string };
 
-let state: UpdateState = { status: "checking" };
+let state: UpdateState = { status: "idle" };
 
 const listeners = new Set<() => void>();
 
@@ -31,15 +33,20 @@ export function useUpdate() {
 
 /** Checks the GitHub release endpoint for a newer version. Runs at launch. */
 export async function checkForUpdates() {
-  if (state.status === "checking" || state.status === "installing") return;
+  if (state.status === "installing") return;
   set({ status: "checking" });
   try {
-    const update = await check();
+    // Guard against a hung check (the Rust side has its own 15s timeout).
+    const update = await Promise.race([
+      check(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("检查超时")), 5_000),
+      ),
+    ]);
     if (update) set({ status: "available", version: update.version });
     else set({ status: "none" });
   } catch (e) {
-    // No release yet (404) or offline — a quiet failure, not an error state.
-    set({ status: "none" });
+    set({ status: "error", message: String(e) });
   }
 }
 
@@ -55,6 +62,9 @@ export async function installUpdate() {
     }
     await update.downloadAndInstall();
     set({ status: "installed" });
+    // The bundle has been replaced; restart so the new version runs. The beat
+    // of delay lets the UI show "更新完成" before the window closes.
+    setTimeout(() => void restartApp(), 1200);
   } catch (e) {
     set({ status: "error", message: String(e) });
   }
