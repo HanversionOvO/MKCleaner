@@ -48,6 +48,17 @@ fn fda_status() -> bool {
     true
 }
 
+/// Opens the Full Disk Access panel in System Settings.
+///
+/// The deep link must use the modern System Settings bundle id — macOS 12's
+/// `com.apple.preference.security` silently does nothing on macOS 13+.
+#[tauri::command]
+fn open_fda_settings() {
+    let _ = std::process::Command::new("open")
+        .arg("x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_AllFiles")
+        .spawn();
+}
+
 /// Restarts the app after an update has replaced the bundle.
 ///
 /// In a dev build there is no bundle to relaunch, so the current executable
@@ -108,6 +119,7 @@ pub fn run() {
             license_path,
             restart_app,
             fda_status,
+            open_fda_settings,
         ])
         // Closing the window hides it instead of quitting — the app lives in
         // the tray. Cmd+Q still quits, as does the tray's 退出 item.

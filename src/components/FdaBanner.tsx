@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { fdaStatus } from "@/lib/ipc";
-
-/** The system settings deep link to the Full Disk Access panel. */
-const FDA_PANEL = "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles";
+import { fdaStatus, openFdaSettings } from "@/lib/ipc";
 
 /**
  * Tells the user about Full Disk Access.
@@ -39,7 +35,7 @@ export function FdaBanner() {
       <div className="flex shrink-0 items-center gap-2">
         <button
           type="button"
-          onClick={() => void openUrl(FDA_PANEL)}
+          onClick={() => void openFdaSettings()}
           className="rounded-control bg-clay px-3.5 py-[7px] font-medium text-white transition-colors duration-[var(--fast)] hover:bg-clay-hover"
         >
           打开设置

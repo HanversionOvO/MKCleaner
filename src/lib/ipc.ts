@@ -50,6 +50,8 @@ export const restartApp = () => invoke<void>("restart_app");
 
 export const fdaStatus = () => invoke<boolean>("fda_status");
 
+export const openFdaSettings = () => invoke<void>("open_fda_settings");
+
 // --- disk -----------------------------------------------------------------
 
 export const DiskSummary = z.object({
