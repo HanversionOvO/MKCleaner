@@ -1,0 +1,55 @@
+{
+  "path": "/Users/mikannqaq",
+  "overview": false,
+  "entries": [
+    {
+      "name": "Library",
+      "path": "/Users/mikannqaq/Library",
+      "size": 17841373184,
+      "is_dir": true
+    },
+    {
+      "name": "Projects",
+      "path": "/Users/mikannqaq/Projects",
+      "size": 8435344774,
+      "is_dir": true
+    },
+    {
+      "name": ".cache",
+      "path": "/Users/mikannqaq/.cache",
+      "size": 1673650176,
+      "is_dir": true
+    },
+    {
+      "name": ".rustup",
+      "path": "/Users/mikannqaq/.rustup",
+      "size": 1658957824,
+      "is_dir": true
+    },
+    {
+      "name": ".Huawei",
+      "path": "/Users/mikannqaq/.Huawei",
+      "size": 1456356134,
+      "is_dir": true
+    }
+  ],
+  "large_files": [
+    {
+      "name": "userdata.img.qcow2",
+      "path": "/Users/mikannqaq/.Huawei/Emulator/deployed/MateBook Pro/userdata.img.qcow2",
+      "size": 1402470400
+    },
+    {
+      "name": "electron-default-signed.hap",
+      "path": "/Users/mikannqaq/Projects/HarmonyOS/MKAgent/ohos-hap/electron-default-signed.hap",
+      "size": 453818750
+    },
+    {
+      "name": "codex",
+      "path": "/Users/mikannqaq/.codex/plugins/.plugin-appserver/codex",
+      "size": 267702000
+    }
+  ],
+  "total_size": 35293518379,
+  "total_files": 49982
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.dev/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Not sandboxed: the whole point of the app is removing caches and logs
+	     from arbitrary locations under the user's home and /Library. A sandbox
+	     would confine every path the Mole engine touches. -->
+
+	<!-- The engine shells out to `osascript` for its native admin-password
+	     dialog when a cleanup step needs root. -->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+
+	<!-- The engine is bash plus two Go helpers under Contents/Resources/mole.
+	     Hardened Runtime otherwise refuses to load code we ship ourselves that
+	     is signed separately from the main executable. -->
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
+</dict>
+</plist>

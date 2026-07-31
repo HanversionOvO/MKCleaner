@@ -1,0 +1,106 @@
+/* Newsreader — SIL Open Font License 1.1. Self-hosted so the app's CSP can stay
+   `font-src 'self'` and so the display face is available offline. */
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/newsreader-latin-var.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------------------------------------------------
+   Tokens
+   Every colour, radius and duration in the app resolves through one of these.
+   Light and dark are the same set of names with different values, so components
+   never branch on theme.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces, from the paper the app is printed on up to the raised cards. */
+  --canvas: #faf9f5;
+  --surface: #ffffff;
+  --sunken: #f0eee6;
+  --hairline: #e5e1d8;
+  --hairline-strong: #d6d1c4;
+
+  /* Text, three steps of emphasis. */
+  --ink: #191919;
+  --ink-muted: #6b6862;
+  --ink-faint: #93908a;
+
+  /* Clay is the one saturated colour in the app. It marks reclaimable space and
+     primary actions, and nothing else — that restraint is what makes it read. */
+  --clay: #d97757;
+  --clay-hover: #c96442;
+  --clay-soft: #f6e8e1;
+
+  --moss: #4a7c59;
+  --amber: #a8760c;
+  --rust: #bc4c3e;
+
+  /* Frosted panels. The sidebar and any other glass sits on the window
+     background, so the tint comes from the surface colour, not the canvas. */
+  --glass: color-mix(in srgb, var(--surface) 62%, transparent);
+
+  --radius-card: 12px;
+  --radius-control: 8px;
+
+  /* One curve, two durations. Anything slower feels like the app is stalling. */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --fast: 140ms;
+  --slow: 420ms;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --canvas: #262624;
+  --surface: #30302e;
+  --sunken: #1f1e1d;
+  --hairline: #3d3d3a;
+  --hairline-strong: #4c4c48;
+
+  --ink: #f5f4ee;
+  --ink-muted: #a5a29b;
+  --ink-faint: #7c7972;
+
+  --clay: #e08768;
+  --clay-hover: #eb9878;
+  --clay-soft: #3a2e2a;
+
+  --moss: #7fb08d;
+  --amber: #d3a544;
+  --rust: #e0806f;
+
+  color-scheme: dark;
+}
+
+/* Expose the tokens to Tailwind as `bg-canvas`, `text-ink-muted`, `border-hairline`… */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+
+  --color-clay: var(--clay);
+  --color-clay-hover: var(--clay-hover);
+  --color-clay-soft: var(--clay-soft);
+  --color-glass: var(--glass);
+
+  --color-moss: var(--moss);
+  --color-amber: var(--amber);
+  --color-rust: var(--rust);
+
+  /* SF Pro for the interface so the app sits correctly on macOS; Newsreader
+     only for display type, where it carries the personality. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-display: "Newsreader", ui-serif, Georgia, serif;
+
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+}

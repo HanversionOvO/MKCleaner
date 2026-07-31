@@ -1,0 +1,52 @@
+{
+  "path": "/",
+  "overview": true,
+  "entries": [
+    {
+      "name": "Home",
+      "path": "/Users/mikannqaq",
+      "size": 35254658113,
+      "is_dir": true
+    },
+    {
+      "name": "Applications",
+      "path": "/Applications",
+      "size": 27997016064,
+      "is_dir": true
+    },
+    {
+      "name": "User Library",
+      "path": "/Users/mikannqaq/Library",
+      "size": 17841373184,
+      "is_dir": true
+    },
+    {
+      "name": "System Library",
+      "path": "/Library",
+      "size": 6343614464,
+      "is_dir": true
+    },
+    {
+      "name": "Xcode Simulators",
+      "path": "/Users/mikannqaq/Library/Developer/CoreSimulator/Devices",
+      "size": 2092871680,
+      "is_dir": true,
+      "insight": true
+    },
+    {
+      "name": "Old Downloads (90d+)",
+      "path": "/Users/mikannqaq/Downloads",
+      "size": 81297694,
+      "is_dir": true,
+      "insight": true
+    },
+    {
+      "name": "System Logs",
+      "path": "/Users/mikannqaq/Library/Logs",
+      "size": 76976128,
+      "is_dir": true,
+      "insight": true
+    }
+  ],
+  "total_size": 89687807327
+}

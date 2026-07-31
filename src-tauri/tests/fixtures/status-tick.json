@@ -1,0 +1,170 @@
+{
+  "collected_at": "2026-07-31T19:29:15.334969+08:00",
+  "host": "huweifandeMacBook-Air.local",
+  "platform": "darwin 26.6",
+  "uptime": "7h 24m",
+  "uptime_seconds": 26686,
+  "procs": 686,
+  "hardware": {
+    "model": "MacBook Air",
+    "cpu_model": "Apple M4",
+    "total_ram": "16.0 GB",
+    "disk_size": "228.3 GB",
+    "os_version": "macOS 26.6",
+    "refresh_rate": ""
+  },
+  "health_score": 100,
+  "health_score_msg": "Excellent",
+  "cpu": {
+    "usage": 3.9022182159399885,
+    "per_core": [
+      19.888228157735337,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      16.666666666603508,
+      0,
+      0
+    ],
+    "per_core_estimated": false,
+    "load1": 1.34228515625,
+    "load5": 1.40673828125,
+    "load15": 1.4306640625,
+    "core_count": 10,
+    "logical_cpu": 10,
+    "p_core_count": 4,
+    "e_core_count": 6
+  },
+  "gpu": [
+    {
+      "name": "Apple M4",
+      "usage": -1,
+      "memory_used": 0,
+      "memory_total": 0,
+      "core_count": 8,
+      "note": "sppci_vendor_Apple"
+    }
+  ],
+  "memory": {
+    "used": 8936554496,
+    "total": 17179869184,
+    "available": 8243314688,
+    "used_percent": 52.01759338378906,
+    "swap_used": 0,
+    "swap_total": 0,
+    "cached": 5872713728,
+    "pressure": ""
+  },
+  "disks": [
+    {
+      "mount": "/",
+      "device": "/dev/disk2s3s1",
+      "used": 148236653800,
+      "total": 245107195904,
+      "used_percent": 60.47829532432788,
+      "fstype": "apfs",
+      "external": false,
+      "smart_status": "verified"
+    },
+    {
+      "mount": "/Library/Developer/CoreSimulator/Volumes/iOS_23F77",
+      "device": "/dev/disk5s1",
+      "used": 17617674240,
+      "total": 18083741696,
+      "used_percent": 97.42272664675868,
+      "fstype": "apfs",
+      "external": true,
+      "smart_status": "unsupported"
+    }
+  ],
+  "trash_size": 0,
+  "trash_approx": false,
+  "disk_io": {
+    "read_rate": 0,
+    "write_rate": 0
+  },
+  "network": [
+    {
+      "name": "en3",
+      "rx_rate_mbs": 0,
+      "tx_rate_mbs": 0,
+      "ip": ""
+    },
+    {
+      "name": "en4",
+      "rx_rate_mbs": 0,
+      "tx_rate_mbs": 0,
+      "ip": ""
+    },
+    {
+      "name": "en1",
+      "rx_rate_mbs": 0,
+      "tx_rate_mbs": 0,
+      "ip": ""
+    }
+  ],
+  "proxy": {
+    "enabled": true,
+    "type": "TUN",
+    "host": "utun0+"
+  },
+  "batteries": [
+    {
+      "percent": 62,
+      "status": "charging",
+      "time_left": "1:08",
+      "health": "Good",
+      "cycle_count": 46,
+      "capacity": 100
+    }
+  ],
+  "thermal": {
+    "cpu_temp": 0,
+    "gpu_temp": 0,
+    "battery_temp": 30.81,
+    "fan_speed": 0,
+    "fan_count": 0,
+    "system_power": 53.199,
+    "adapter_power": 90,
+    "battery_power": -21.989
+  },
+  "sensors": null,
+  "top_processes": [
+    {
+      "pid": 5820,
+      "ppid": 5263,
+      "name": "bun",
+      "command": "bun",
+      "cpu": 22.8,
+      "memory": 4.2,
+      "memory_bytes": 720404480
+    },
+    {
+      "pid": 393,
+      "ppid": 1,
+      "name": "WindowServer",
+      "command": "WindowServer",
+      "cpu": 15.5,
+      "memory": 0.9,
+      "memory_bytes": 161775616
+    },
+    {
+      "pid": 5261,
+      "ppid": 1,
+      "name": "Terminal",
+      "command": "Terminal",
+      "cpu": 9.4,
+      "memory": 1,
+      "memory_bytes": 178896896
+    }
+  ],
+  "process_watch": {
+    "enabled": true,
+    "cpu_threshold": 100,
+    "window": "5m0s"
+  },
+  "process_alerts": []
+}

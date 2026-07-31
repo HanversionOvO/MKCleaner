@@ -1,0 +1,320 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  /* 13.5px is the macOS interface size; anything larger reads as a web page
+     that happens to be in a window. */
+  font-size: 13.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Paths and sizes are worth copying; nothing else is worth selecting. */
+.selectable {
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--ink) 16%, transparent);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--ink) 28%, transparent);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Type roles
+   --------------------------------------------------------------------------- */
+
+/* The reclaimable total, and nothing else. Optical sizing at the display end of
+   the axis keeps the serifs from getting spindly at this size. */
+.type-figure {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variation-settings: "opsz" 48;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.type-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-variation-settings: "opsz" 28;
+  font-size: 1.55rem;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+
+/* Eyebrows and column heads. Small, wide, quiet. */
+.type-label {
+  font-size: 0.7rem;
+  font-weight: 590;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* Any number that sits in a column with other numbers. */
+.type-data {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01";
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+   --------------------------------------------------------------------------- */
+
+/* Content appearing, without fanfare: a quiet rise out of nothing. */
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fade-rise 200ms var(--ease) both;
+}
+
+/* A finished optimization drifting away like smoke — Apple Music's dissolve:
+   the row swells slightly, blurs outward and fades, then folds its space. */
+@keyframes smoke-out {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+  25% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    filter: blur(9px);
+    transform: scale(1.05) translateY(-3px);
+  }
+}
+
+@keyframes smoke-collapse {
+  from {
+    height: 2.6rem;
+    opacity: 0;
+    border-top-width: 1px;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+    border-top-width: 0;
+  }
+}
+
+.optimize-item-done {
+  overflow: hidden;
+  animation:
+    smoke-out 480ms var(--ease) forwards,
+    smoke-collapse 180ms var(--ease) 480ms forwards;
+}
+
+/* The cheer when everything is done: the count pops once, no confetti. */
+@keyframes cheer-pop {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.cheer-pop {
+  animation: cheer-pop 480ms var(--ease) both;
+}
+
+/* Rising in from below, growing as it comes — for bars that float over the
+   content, like the uninstall selection. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.rise-in {
+  animation: rise-in 260ms var(--ease) both;
+}
+
+/* And the way out: shrink and sink back down. */
+@keyframes rise-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+}
+
+.rise-out {
+  animation: rise-out 240ms var(--ease) forwards;
+}
+
+/* The mirror of fade-in: a view leaves the way it arrived, briefly. */
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+    filter: blur(1.5px);
+  }
+}
+
+.exit-fade {
+  animation: fade-out 200ms var(--ease) forwards;
+}
+
+/* A slow clay mist breathing over the card while the scan runs — the scan as
+   atmosphere rather than a blinking indicator. */
+@keyframes mist-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.scan-mist {
+  position: absolute;
+  inset: -15%;
+  pointer-events: none;
+  background: radial-gradient(
+    75% 65% at 50% 12%,
+    color-mix(in srgb, var(--clay) 13%, transparent),
+    transparent 62%
+  );
+  animation: mist-breathe 4.2s ease-in-out infinite;
+}
+
+/* The directory name dissolving when its scan finishes: the blur swells and
+   the name spreads and fades, leaving the spot clean for the next one. */
+@keyframes name-diffuse {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(-2px) scale(1.05);
+  }
+}
+
+.scan-name-leaving {
+  position: absolute;
+  left: 0;
+  white-space: nowrap;
+  animation: name-diffuse 480ms var(--ease) forwards;
+}
+
+/* A checklist entry the cleanup has finished with: dims, recedes into the
+   depth of the screen, then folds its space away so the rest of the list
+   does not sit below a ghost. */
+@keyframes clean-item-out {
+  0% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-3px);
+    filter: blur(2px);
+  }
+}
+
+@keyframes clean-item-collapse {
+  from {
+    height: 1.8rem;
+    opacity: 0;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+.clean-item-done {
+  overflow: hidden;
+  animation:
+    clean-item-out 420ms var(--ease) forwards,
+    clean-item-collapse 200ms var(--ease) 420ms forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
